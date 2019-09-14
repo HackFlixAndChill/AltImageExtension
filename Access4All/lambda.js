@@ -1,32 +1,23 @@
-const apigClientFactory = require('aws-api-gateway-client').default;
+global.fetch = require("node-fetch");
 
-/**
- * get dictionary of image alt texts in form {<imgname: string>: <alttext: string>}
- * @param {URL of the website} URL 
- */
-function getAltText(URL) {
-    var apigClient = apigClientFactory.newClient({
-        apiKey: process.env.AWSAPIGatewayKey,
-        invokeUrl: process.env.AWSAPIGatewayBase,
-    });
-
-    var params = {
-        FunctionName: 'handle_accessibility',
-        Payload: JSON.stringify({ "Test": "Hello world" })
+function getAltTextTwo(URL) {
+    var data = {
+        'URL': URL
     };
-
-    var additionalParams = {};
-
-    var body = {
-        "URL": URL
-    };
-
-    apigClient.invokeApi(params = params, pathTemplate = '', method = "GET", additionalParams, body)
-        .then(function (result) {
-            return result;
-        }).catch(function (result) {
-            console.error(result);
-        });
+    return fetch('https://' + process.env.AWSAPIGatewayBase + '/default/handle_accessibility', {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.AWSAPIGatewayKey,
+            'Host': process.env.AWSAPIGatewayBase
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrer: 'no-referrer', // no-referrer, *client
+        body: JSON.stringify(data), // body data type must match "Content-Type" heade
+    })
+    .then(response => response.json())
+    .then(json => console.log(json));
 }
 
-export default getAltText;
+//getAltTextTwo("google.com");
