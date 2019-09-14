@@ -3,7 +3,7 @@
 
   "name": "Access4All",
   "description": "It does stuff",
-  "version": "1.039",
+  "version": "1.048",
   "permissions": ["tabs"],
   "background": {
     "scripts": ["background.js"],
