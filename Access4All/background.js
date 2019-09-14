@@ -25,8 +25,8 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if( request.message === "post_url" ) {
       var url = sender.tab.url;
-      response = getAltText(url);
-      sendResponse({farewell: "I finished running.. JUST FYI"});
+      images = getAltText(url);
+      sendResponse({images: images});
     }
   }
 );
