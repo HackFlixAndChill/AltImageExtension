@@ -3,7 +3,7 @@ function getAltText(URL) {
        'URL': URL
    };
    var AWSAPIGatewayKey='AESh5ga5gU4CKGzyFpBQkSxwCuIXi6R85PLgitMg'
-   var AWSAPIGatewayBase='https://oq2hish015.execute-api.us-east-2.amazonaws.com/default/handle_accessibility'
+   var AWSAPIGatewayBase='oq2hish015.execute-api.us-east-2.amazonaws.com'
 
    return fetch('https://' + AWSAPIGatewayBase + '/default/handle_accessibility', {
        method: 'POST', // *GET, POST, PUT, DELETE, etc.
