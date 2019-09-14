@@ -1,0 +1,13 @@
+{
+  "manifest_version": 2,
+
+  "name": "Access4All",
+  "description": "It does stuff",
+  "version": "1.002",
+  "content_scripts": [
+    {
+      "matches": ["https://*.com/*"],
+      "js": ["imagealt.js"]
+    }
+  ]
+}
