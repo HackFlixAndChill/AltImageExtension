@@ -3,11 +3,16 @@
 
   "name": "Access4All",
   "description": "It does stuff",
-  "version": "1.002",
+  "version": "1.039",
+  "permissions": ["tabs"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
   "content_scripts": [
-    {
-      "matches": ["https://*.com/*"],
-      "js": ["imagealt.js"]
-    }
-  ]
+  {
+    "matches": ["https://*/*"],
+    "js": ["imagealt.js"]
+  }
+]
 }

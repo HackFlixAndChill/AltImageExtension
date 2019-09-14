@@ -1,3 +1,5 @@
 window.onload = function() {
-	document.write('Hello world')
+	chrome.runtime.sendMessage({message: "post_url"}, function(response) {
+	  console.log(response.farewell);
+	});
 }
