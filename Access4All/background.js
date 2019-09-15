@@ -18,31 +18,27 @@ function getAltText(URL) {
     redirect: 'follow', // manual, *follow, error
     referrer: 'no-referrer', // no-referrer, *client
     body: JSON.stringify(data), // body data type must match "Content-Type" heade
-  })
-    .then(response => {
-      return response.json()
-    })
+  }).then(response =>
+      response.json()
+    )
     .then(json => {
       console.log("JSON:", json);
       return json;
     });
 }
 
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    if (request.message === "post_url") {
-      var url = sender.tab.url;
-
+tabIdToImages = {}
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {  
+  if ("status" in changeInfo && !tab["url"].startswith("chrome") ) {
+    if (changeInfo["status"] === "loading") {
+      let url = tab["url"];
       getAltText(url).then((json) => {
-        images = json['alt_img_tags']
-        console.log("Images:", images);
-
-        sendResponse({ images: images });
+        tabIdToImages[tabId] = json['alt_img_tags'];
+        console.log("Images:", tabIdToImages[tabId]);
       });
 
-      return true;
+    } else if (changeInfo["status"] === "complete") {
+      chrome.tabs.sendMessage(tab.id, { message: "images", images: tabIdToImages[tabId] });
     }
   }
-);
-
-// console.log(getAltText("https://moz.com/learn/seo/alt-text"));
+});
