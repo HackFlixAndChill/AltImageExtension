@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Access4All",
-  "description": "It does stuff",
+  "description": "Automatically adds alt text to images that lack it and increases contrast where it is inadequate.",
   "version": "1.01",
   "permissions": [
     "tabs",
