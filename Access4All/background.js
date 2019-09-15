@@ -29,7 +29,7 @@ function getAltText(URL) {
 
 tabIdToImages = {}
 tabCompletes = {}
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {  
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if ("status" in changeInfo && !tab["url"].startsWith("chrome") ) {
     if (changeInfo["status"] === "loading") {
       tabCompletes[tabId] = false;

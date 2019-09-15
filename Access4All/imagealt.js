@@ -53,12 +53,14 @@ function convertColors(color) {
 }
 
 function get_color(color) {
-	console.log("Color:", color);
+	// console.log("Color:", color);
 	return color = color/255.0 <= 0.03928 ? color/(255.0*12.92): Math.pow( ((color/255.0+0.055)/1.055), 2.4);;
 }
 
 function get_color_reverse(color) {
+	// console.log("To_Update:", color);
 	var opt = color*12.92;
+	// console.log("option:", opt);
 	if (opt <= 0.03928) {
 		return Math.ceil(opt*255);
 	}
@@ -68,14 +70,14 @@ function get_color_reverse(color) {
 }
 
 function updated_colors(colors) {
-	console.log(colors);
+	// console.log(colors);
 	if (colors.length === 4) {
 		if (colors[3] === 0) {
 			colors[0] = 255.0;
 			colors[1] = 255.0;
 			colors[2] = 255.0;
 		}
-		else if (colors[3] !== NaN) {
+		else if (!isNaN(colors[3]) ) {
 			var alpha = colors[3];
 			// assuming on white background
 			colors[0] *= 255.0*(1-alpha)+colors[0]*alpha
@@ -88,7 +90,7 @@ function updated_colors(colors) {
 
 function get_luminosity(colors) {
 	colors = updated_colors(colors);
-	console.log(colors);
+	// console.log(colors);
 	return 0.2126 * colors[0] + 0.7152 * colors[1] + 0.0722 * colors[2];
 }
 
@@ -105,9 +107,36 @@ window.onload = function () {
 					img.alt = images[img.src];
 				}
 			}
+		}
 
-			var elems = document.documentElement.querySelectorAll("p");
-			console.log("Elems:", elems);
+		var elems = document.documentElement.querySelectorAll("p");
+		console.log("Elems:", elems);
+		for (var element of elems) {
+			console.log("Element:", element);
+			var style = window.getComputedStyle(element);
+
+			var color = style.backgroundColor;
+			var colors = convertColors(color);
+
+			var text_color = style.getPropertyValue("color");
+			var text_colors = convertColors(text_color);
+
+			var L1 = get_luminosity(colors);
+			var L2 = get_luminosity(text_colors);
+			var contrast = L1>L2 ? (L1+.05)/(L2+.05):(L2+.05)/(L1+.05);
+			console.log("Contrast:", contrast, L1, colors, L2, text_colors);
+
+			if (contrast <= 3) {
+				var new_L2 = L1>L2 ? ((L1+.05)/3)-.05:3*(L1+.05)-.05;
+				var update_txt_colors = updated_colors(text_colors);
+				var color_multi = new_L2/L2;
+
+				for (var i=0; i<3; i++) {
+					update_txt_colors[i] *= color_multi;
+					update_txt_colors[i] = get_color_reverse(update_txt_colors[i])
+				}
+				console.log("Final numbers:", update_txt_colors);
+			}
 		}
 	});
 }

@@ -1,5 +1,3 @@
-global.fetch = require("node-fetch");
-
 function superEncodeURI(url) {
 
     var encodedStr = '', encodeChars = ["(", ")"];
@@ -57,6 +55,3 @@ function getContrastColors(C1, C2) {
 }
 
 console.log(getContrastColors('rgb(70,136,71)', '#7A81FF'));
-
-
-
