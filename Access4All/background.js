@@ -37,11 +37,13 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
       getAltText(url).then((json) => {
         tabIdToImages[tabId] = json['alt_img_tags'];
         console.log("Images:", tabIdToImages[tabId]);
+
+        if (tabCompletes[tabId]) {
+          chrome.tabs.sendMessage(tab.id, { message: "images", images: tabIdToImages[tabId] });
+        }
       });
 
-      if (tabCompletes[tabId]) {
-        chrome.tabs.sendMessage(tab.id, { message: "images", images: tabIdToImages[tabId] });
-      }
+
 
     } else if (changeInfo["status"] === "complete") {
       tabCompletes[tabId] = true;
