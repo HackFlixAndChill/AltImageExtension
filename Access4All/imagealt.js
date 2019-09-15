@@ -117,6 +117,15 @@ window.onload = function () {
 
 			var color = style.backgroundColor;
 			var colors = convertColors(color);
+			var next_element = element.parentElement;
+			while (colors[3] === 0) {
+				if (!(next_element instanceof Element)) {
+					break;
+				}
+				colors = convertColors( window.getComputedStyle(next_element).getPropertyValue("background-color") );
+				next_element = next_element.parentElement
+			}
+			// console.log("AFTER?:",colors);
 
 			var text_color = style.getPropertyValue("color");
 			var text_colors = convertColors(text_color);
@@ -124,7 +133,7 @@ window.onload = function () {
 			var L1 = get_luminosity(colors);
 			var L2 = get_luminosity(text_colors);
 			var contrast = L1>L2 ? (L1+.05)/(L2+.05):(L2+.05)/(L1+.05);
-			console.log("Contrast:", contrast, L1, colors, L2, text_colors);
+			// console.log("Contrast:", contrast, L1, colors, L2, text_colors);
 
 			if (contrast <= 3) {
 				var new_L2 = L1>L2 ? ((L1+.05)/3)-.05:3*(L1+.05)-.05;
@@ -133,9 +142,10 @@ window.onload = function () {
 
 				for (var i=0; i<3; i++) {
 					update_txt_colors[i] *= color_multi;
-					update_txt_colors[i] = get_color_reverse(update_txt_colors[i])
+					update_txt_colors[i] = get_color_reverse(update_txt_colors[i]);
 				}
-				console.log("Final numbers:", update_txt_colors);
+				element.style.color = "rgb(" +update_txt_colors[0]+","+update_txt_colors[1]+","+update_txt_colors[2]+")";
+				console.log("Final numbers:", update_txt_colors, text_colors);
 			}
 		}
 	});
