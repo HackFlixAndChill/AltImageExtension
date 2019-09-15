@@ -1,3 +1,5 @@
+const LuminosityNum = 4.5;
+
 function convertColors(color) {
   var rgbColors=new Object();
 
@@ -58,13 +60,15 @@ function get_color(color) {
 }
 
 function get_color_reverse(color) {
-	// console.log("To_Update:", color);
+	console.log("To_Update:", color);
 	var opt = color*12.92;
 	// console.log("option:", opt);
 	if (opt <= 0.03928) {
+		console.log("Here (first):", opt*255 );
 		return Math.ceil(opt*255);
 	}
 	else {
+		console.log("Here:", Math.ceil( (Math.pow(color, 1.0/2.4)*1.005-.055)*255 ));
 		return Math.ceil( (Math.pow(color, 1.0/2.4)*1.005-.055)*255 );
 	}
 }
@@ -140,8 +144,10 @@ window.onload = function () {
 			var contrast = L1>L2 ? (L1+.05)/(L2+.05):(L2+.05)/(L1+.05);
 			// console.log("Contrast:", contrast, L1, colors, L2, text_colors);
 
-			if (contrast <= 3) {
-				var new_L2 = L1>L2 ? ((L1+.05)/3)-.05:3*(L1+.05)-.05;
+			if (contrast <= LuminosityNum) {
+				var new_L2_1 =((L1+.05)/LuminosityNum)-.05;
+				var new_L2_2 = LuminosityNum*(L1+.05)-.05;
+				var new_L2 = new_L2_2 <= 1.0 ? new_L2_2:new_L2_1;
 				var update_txt_colors = updated_colors(text_colors);
 				var color_multi = new_L2/L2;
 
@@ -149,9 +155,12 @@ window.onload = function () {
 					update_txt_colors[i] *= color_multi;
 					update_txt_colors[i] = get_color_reverse(update_txt_colors[i]);
 				}
+				var L2 = get_luminosity(update_txt_colors);
+				var contrast = L1>L2 ? (L1+.05)/(L2+.05):(L2+.05)/(L1+.05);
 				element.style.color = "rgb(" +update_txt_colors[0]+","+update_txt_colors[1]+","+update_txt_colors[2]+")";
 				console.log("Element:", element);
-				console.log("Final numbers:", "New:", update_txt_colors, "Old:", text_colors);
+				console.log("Final numbers:\n", "New:", update_txt_colors, "Old:", text_colors,
+										"Background:", colors, "Contrast:", contrast);
 			}
 		}
 	});
