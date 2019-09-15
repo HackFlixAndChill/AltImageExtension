@@ -80,11 +80,12 @@ function updated_colors(colors) {
 		else if (!isNaN(colors[3]) ) {
 			var alpha = colors[3];
 			// assuming on white background
-			colors[0] *= 255.0*(1-alpha)+colors[0]*alpha
-			colors[1] *= 255.0*(1-alpha)+colors[1]*alpha
-			colors[2] *= 255.0*(1-alpha)+colors[2]*alpha
+			colors[0] = 255.0*(1.-alpha)+colors[0]*alpha
+			colors[1] = 255.0*(1.-alpha)+colors[1]*alpha
+			colors[2] = 255.0*(1.-alpha)+colors[2]*alpha
 		}
 	}
+	// console.log(colors);
 	return [get_color(colors[0]), get_color(colors[1]), get_color(colors[2])];
 }
 
@@ -109,23 +110,27 @@ window.onload = function () {
 			}
 		}
 
-		var elems = document.documentElement.querySelectorAll("p");
-		console.log("Elems:", elems);
+		var elems = document.all;
+		// console.log("Elems:", elems);
 		for (var element of elems) {
-			console.log("Element:", element);
+			// console.log("Element:", element);
 			var style = window.getComputedStyle(element);
 
 			var color = style.backgroundColor;
 			var colors = convertColors(color);
-			var next_element = element.parentElement;
-			while (colors[3] === 0) {
-				if (!(next_element instanceof Element)) {
-					break;
+			try {
+				var next_element = element.parentElement;
+				while (colors[3] === 0) {
+					if (!(next_element instanceof Element)) {
+						break;
+					}
+					colors = convertColors( window.getComputedStyle(next_element).getPropertyValue("background-color") );
+					next_element = next_element.parentElement
 				}
-				colors = convertColors( window.getComputedStyle(next_element).getPropertyValue("background-color") );
-				next_element = next_element.parentElement
 			}
-			// console.log("AFTER?:",colors);
+			finally {
+				// console.log("AFTER?:",colors);
+			}
 
 			var text_color = style.getPropertyValue("color");
 			var text_colors = convertColors(text_color);
@@ -145,7 +150,8 @@ window.onload = function () {
 					update_txt_colors[i] = get_color_reverse(update_txt_colors[i]);
 				}
 				element.style.color = "rgb(" +update_txt_colors[0]+","+update_txt_colors[1]+","+update_txt_colors[2]+")";
-				console.log("Final numbers:", update_txt_colors, text_colors);
+				console.log("Element:", element);
+				console.log("Final numbers:", "New:", update_txt_colors, "Old:", text_colors);
 			}
 		}
 	});
