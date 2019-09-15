@@ -18,10 +18,9 @@ function getAltText(URL) {
     redirect: 'follow', // manual, *follow, error
     referrer: 'no-referrer', // no-referrer, *client
     body: JSON.stringify(data), // body data type must match "Content-Type" heade
-  })
-    .then(response => {
-      return response.json()
-    })
+  }).then(response =>
+      response.json()
+    )
     .then(json => {
       console.log("JSON:", json);
       return json;
