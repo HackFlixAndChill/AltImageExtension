@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Access4All",
   "description": "It does stuff",
-  "version": "1.073",
+  "version": "1.074",
   "permissions": [
     "tabs",
     "https://oq2hish015.execute-api.us-east-2.amazonaws.com/default/handle_accessibility"
