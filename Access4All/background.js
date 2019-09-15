@@ -28,17 +28,27 @@ function getAltText(URL) {
 }
 
 tabIdToImages = {}
+tabCompletes = {}
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {  
   if ("status" in changeInfo && !tab["url"].startsWith("chrome") ) {
     if (changeInfo["status"] === "loading") {
+      tabCompletes[tabId] = false;
       let url = tab["url"];
       getAltText(url).then((json) => {
         tabIdToImages[tabId] = json['alt_img_tags'];
         console.log("Images:", tabIdToImages[tabId]);
+
+        if (tabCompletes[tabId]) {
+          chrome.tabs.sendMessage(tab.id, { message: "images", images: tabIdToImages[tabId] });
+        }
       });
 
+
+
     } else if (changeInfo["status"] === "complete") {
-      chrome.tabs.sendMessage(tab.id, { message: "images", images: tabIdToImages[tabId] });
+      tabCompletes[tabId] = true;
+      if (tabId in tabIdToImages)
+        chrome.tabs.sendMessage(tab.id, { message: "images", images: tabIdToImages[tabId] });
     }
   }
 });
