@@ -54,27 +54,21 @@ function convertColors(color) {
   return rgbColors;
 }
 
+
 function get_color(color) {
-	// console.log("Color:", color);
-	return color = color/255.0 <= 0.03928 ? color/(255.0*12.92): Math.pow( ((color/255.0+0.055)/1.055), 2.4);;
+	return color/255.0 <= 0.03928 ? color/(255.0*12.92): Math.pow( ((color/255.0+0.055)/1.055), 2.4);
 }
 
-function get_color_reverse(color) {
-	console.log("To_Update:", color);
-	var opt = color*12.92;
-	// console.log("option:", opt);
-	if (opt <= 0.03928) {
-		console.log("Here (first):", opt*255 );
-		return Math.ceil(opt*255);
+function get_color_reverse(color, round_up) {
+	var new_color = color*12.92;
+	if (new_color > 0.03928) {
+		new_color = (Math.pow(color, 1.0/2.4)*1.055-.055);
 	}
-	else {
-		console.log("Here:", Math.ceil( (Math.pow(color, 1.0/2.4)*1.005-.055)*255 ));
-		return Math.ceil( (Math.pow(color, 1.0/2.4)*1.005-.055)*255 );
-	}
+  new_color *= 255.0;
+  return (round_up ? Math.ceil(new_color):Math.floor(new_color));
 }
 
 function updated_colors(colors) {
-	// console.log(colors);
 	if (colors.length === 4) {
 		if (colors[3] === 0) {
 			colors[0] = 255.0;
@@ -89,13 +83,11 @@ function updated_colors(colors) {
 			colors[2] = 255.0*(1.-alpha)+colors[2]*alpha
 		}
 	}
-	// console.log(colors);
 	return [get_color(colors[0]), get_color(colors[1]), get_color(colors[2])];
 }
 
 function get_luminosity(colors) {
 	colors = updated_colors(colors);
-	// console.log(colors);
 	return 0.2126 * colors[0] + 0.7152 * colors[1] + 0.0722 * colors[2];
 }
 
@@ -115,9 +107,7 @@ window.onload = function () {
 		}
 
 		var elems = document.all;
-		// console.log("Elems:", elems);
 		for (var element of elems) {
-			// console.log("Element:", element);
 			var style = window.getComputedStyle(element);
 
 			var color = style.backgroundColor;
@@ -132,9 +122,7 @@ window.onload = function () {
 					next_element = next_element.parentElement
 				}
 			}
-			finally {
-				// console.log("AFTER?:",colors);
-			}
+			finally { }
 
 			var text_color = style.getPropertyValue("color");
 			var text_colors = convertColors(text_color);
@@ -147,20 +135,27 @@ window.onload = function () {
 			if (contrast <= LuminosityNum) {
 				var new_L2_1 =((L1+.05)/LuminosityNum)-.05;
 				var new_L2_2 = LuminosityNum*(L1+.05)-.05;
-				var new_L2 = new_L2_2 <= 1.0 ? new_L2_2:new_L2_1;
-				var update_txt_colors = updated_colors(text_colors);
-				var color_multi = new_L2/L2;
 
+        var text_colors_max = text_colors[0] > text_colors[1] ? text_colors[0]:text_colors[1];
+        text_colors_max = text_colors_max > text_colors[2] ? text_colors_max:text_colors[2];
+
+        var condition = new_L2_2/L2*get_color(text_colors_max);
+				var color_multi = ( (condition <= 1.055 && condition >= 0) ? new_L2_2:new_L2_1)/L2;
+
+        var update_txt_colors = updated_colors(text_colors);
+        var round_up = color_multi >= 1;
 				for (var i=0; i<3; i++) {
 					update_txt_colors[i] *= color_multi;
-					update_txt_colors[i] = get_color_reverse(update_txt_colors[i]);
+					update_txt_colors[i] = get_color_reverse(update_txt_colors[i], round_up);
 				}
-				var L2 = get_luminosity(update_txt_colors);
-				var contrast = L1>L2 ? (L1+.05)/(L2+.05):(L2+.05)/(L1+.05);
+
 				element.style.color = "rgb(" +update_txt_colors[0]+","+update_txt_colors[1]+","+update_txt_colors[2]+")";
+
+        L2 = get_luminosity(update_txt_colors);
+				contrast = L1>L2 ? (L1+.05)/(L2+.05):(L2+.05)/(L1+.05);
 				console.log("Element:", element);
-				console.log("Final numbers:\n", "New:", update_txt_colors, "Old:", text_colors,
-										"Background:", colors, "Contrast:", contrast);
+				console.log("Final numbers:\n", "New Text Color:", update_txt_colors, "Old Text Color:", text_colors,
+										"Background Color:", colors, "Resulting Contrast:", contrast);
 			}
 		}
 	});
